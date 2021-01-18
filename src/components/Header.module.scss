@@ -1,0 +1,27 @@
+.header {
+  background-color: #ffffff;
+  padding: 10px 40px;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
+
+  & > div {
+    display: flex;
+    align-items: center;
+
+    h1 {
+      font-size: 26px;
+      font-weight: 700;
+      color: #000;
+
+      span {
+        color: #65a9e5;
+      }
+    }
+    .buttons {
+      margin-left: auto;
+
+      & > * {
+        cursor: pointer;
+      }
+    }
+  }
+}

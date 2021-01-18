@@ -1,23 +1,27 @@
-import logo from './logo.svg';
 import './App.css';
+import { BrowserRouter as Router, Redirect, Route } from 'react-router-dom';
+
+import Header from './components/Header';
+import Chat from './components/ChatBody/Chat';
+import Login from './components/Login';
+// import Room from './components/ChatBody/Room'
+import Register from './components/Register';
+import ProtectedRoute from './components/ProtectedRoute';
+import { getCurerntUser } from './helpers';
 
 function App() {
+  const currentUser = getCurerntUser();
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className='App'>
+      <Router>
+        <Header user={currentUser} />
+        <Route path='/login' component={Login} />
+        <Route path='/register' component={Register} />
+        {/* <ProtectedRoute path='/chatTo' component={Room} currentUser={currentUser} /> */}
+        <ProtectedRoute path='/' component={Chat} currentUser={currentUser} />
+        {/* <Redirect to='/login' /> */}
+      </Router>
     </div>
   );
 }

@@ -1,0 +1,55 @@
+.room {
+  padding: 10px 0 10px 10px;
+
+  .messages {
+    height: calc(100vh - 170px);
+    overflow-x: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-bottom: 20px;
+    padding-right: 10px;
+
+    .message {
+      display: flex;
+      border-radius: 10px;
+      padding: 5px 10px 15px;
+      position: relative;
+      min-width: 40px;
+      max-width: 90%;
+      background-color: #c9ff97;
+
+      p {
+        margin: 0;
+        word-break: break-word;
+        text-align: left;
+
+        &.time {
+          position: absolute;
+          bottom: 2px;
+          right: 10px;
+          font-size: 10px;
+        }
+      }
+
+      &:not(:last-child) {
+        margin-bottom: 5px;
+      }
+
+      &.my {
+        background-color: #97d6ff;
+        align-self: flex-end;
+      }
+    }
+  }
+
+  .inputBar {
+    form {
+      display: flex;
+      input {
+        flex: 0 1 100%;
+        height: 30px;
+      }
+    }
+  }
+}

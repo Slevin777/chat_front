@@ -1,0 +1,15 @@
+.active-users-panel {
+  ul {
+    list-style-type: none;
+    padding-left: 0;
+    li {
+      padding: 5px 0;
+      cursor: pointer;
+
+      &.active {
+        background-color: #65a9e5;
+        color: #fff;
+      }
+    }
+  }
+}
