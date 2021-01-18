@@ -18,18 +18,22 @@ const Header = ({ user }) => {
           </h1>
         </Link>
 
-        <div className={styles.buttons}>
-          {user && (
-            <p className='logout' onClick={handleLogout}>
-              LogOut
-            </p>
-          )}
-          {!user && (
-            <>
-              <NavLink to='/login'>Sign in</NavLink>
-              <NavLink to='/register'>Sign up</NavLink>
-            </>
-          )}
+        <div className={styles.userInfo}>
+          {user && <p>{user.name}</p>}
+
+          <div>
+            {user && (
+              <p className='logout' onClick={handleLogout}>
+                LogOut
+              </p>
+            )}
+            {!user && (
+              <>
+                <NavLink to='/login'>Sign in</NavLink>
+                <NavLink to='/register'>Sign up</NavLink>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </header>

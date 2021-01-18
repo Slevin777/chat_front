@@ -3,7 +3,7 @@ import socket from '../../services/webSockets';
 import Message from './Message';
 import './Room.scss';
 
-const Room = ({ room, currentUser }) => {
+const Room = ({ room, currentUser, activeUser }) => {
   const [value, setValue] = useState('');
   const [messages, setMessages] = useState([]);
 
@@ -55,10 +55,11 @@ const Room = ({ room, currentUser }) => {
   return (
     <div className='room'>
       <div className='heading'>
-        {/*  <div className='userTo'>
+        <div className='userTo'>
           <div className='logo'></div>
-          <div className='name'>Name</div>
-        </div> */}
+          <div className='name'>{activeUser.name}</div>
+        </div>
+        <p className='call'>call icon</p>
       </div>
       <div className='messages' ref={messagesRef}>
         {messages.map((message, i) => {
@@ -69,7 +70,12 @@ const Room = ({ room, currentUser }) => {
       </div>
       <div className='inputBar'>
         <form onSubmit={handleSubmit}>
-          <input value={value} onChange={handleChangeInput} ref={inputRef} />
+          <input
+            value={value}
+            onChange={handleChangeInput}
+            ref={inputRef}
+            placeholder='Write a message...'
+          />
           <button>sumbit</button>
         </form>
       </div>

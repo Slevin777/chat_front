@@ -43,7 +43,7 @@ const Chat = ({ currentUser }) => {
             Select active user on the left menu.
           </h2>
         ) : (
-          <Room room={room} currentUser={currentUser} />
+          <Room room={room} currentUser={currentUser} activeUser={activeUser} />
         )}
         <div className='video-container'>
           {/* <video autoplay class='remote-video' id='remote-video'></video> */}

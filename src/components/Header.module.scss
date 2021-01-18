@@ -16,11 +16,25 @@
         color: #65a9e5;
       }
     }
-    .buttons {
-      margin-left: auto;
 
-      & > * {
-        cursor: pointer;
+    .userInfo {
+      margin-left: auto;
+      display: flex;
+
+      & > div {
+        display: flex;
+
+        & > * {
+          cursor: pointer;
+
+          &:not(:last-child) {
+            margin-right: 10px;
+          }
+        }
+      }
+
+      & > p {
+        margin-right: 10px;
       }
     }
   }
