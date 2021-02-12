@@ -1,11 +1,39 @@
 import { useState, useRef, useEffect } from 'react';
+import { ReactComponent as CameraIcon } from '../../icons/video-camera.svg';
 import socket from '../../services/webSockets';
 import Message from './Message';
 import './Room.scss';
 
+const { RTCPeerConnection, RTCSessionDescription } = window;
+const peerConnection = new RTCPeerConnection({
+  iceServers: [
+    {
+      urls: ['stun:stun.l.google.com:19302'],
+    },
+  ],
+});
+const peerConnectionAnsw = new RTCPeerConnection({
+  iceServers: [
+    {
+      urls: ['stun:stun.l.google.com:19302'],
+    },
+  ],
+});
+
+const getMedia = async (mediaConstraints) => {
+  try {
+    return await navigator.mediaDevices.getUserMedia(mediaConstraints);
+  } catch (error) {
+    console.warn(error.message);
+  }
+};
+
 const Room = ({ room, currentUser, activeUser }) => {
   const [value, setValue] = useState('');
   const [messages, setMessages] = useState([]);
+
+  const videoRef = useRef();
+  const remoteVideoRef = useRef();
 
   const inputRef = useRef();
   const messagesRef = useRef();
@@ -14,11 +42,92 @@ const Room = ({ room, currentUser, activeUser }) => {
     setValue(e.target.value);
   };
 
+  /*   useEffect(() => {
+  }, [peerConnectionAnsw]); */
+  peerConnectionAnsw.ontrack = (e) => {
+    remoteVideoRef.current.srcObject = e.streams[0];
+  };
+
+  peerConnection.ontrack = (e) => {
+    remoteVideoRef.current.srcObject = e.streams[0];
+  };
+
+  const handleVideoCall = async () => {
+    try {
+      const stream = await getMedia({
+        audio: true,
+        video: true,
+      });
+      videoRef.current.srcObject = stream;
+      stream
+        .getTracks()
+        .forEach((track) => peerConnection.addTrack(track, stream));
+
+      const offer = await peerConnection.createOffer();
+      await peerConnection.setLocalDescription(offer);
+
+      socket.emit('call-user', {
+        offer: peerConnection.localDescription,
+        to: room.id,
+      });
+      console.log('make a call');
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   useEffect(() => {
     setMessages(room.messages);
 
     socket.on('got_message', (newMessage) => {
       setMessages((prev) => [...prev, newMessage]);
+    });
+
+    socket.on('call-made', async (data) => {
+      await peerConnectionAnsw.setRemoteDescription(
+        new RTCSessionDescription(data.offer)
+      );
+
+      const stream = await getMedia({
+        audio: true,
+        video: true,
+      });
+
+      videoRef.current.srcObject = stream;
+      stream
+        .getTracks()
+        .forEach((track) => peerConnectionAnsw.addTrack(track, stream));
+
+      peerConnectionAnsw.onicecandidate = (event) => {
+        if (event.candidate) {
+          socket.emit('ice-candidate', {
+            to: room.id,
+            candidate: event.candidate,
+          });
+          // console.log('candidate', event.candidate);
+        }
+      };
+
+      const answer = await peerConnectionAnsw.createAnswer();
+      await peerConnectionAnsw.setLocalDescription(answer);
+
+      socket.emit('make-answer', {
+        answer: peerConnectionAnsw.localDescription,
+        to: room.id,
+      });
+      console.log('call made');
+      console.log('make answer');
+    });
+
+    socket.on('answer-made', async (data) => {
+      await peerConnection.setRemoteDescription(
+        new RTCSessionDescription(data.answer)
+      );
+      console.log('answer made');
+    });
+
+    socket.on('ice-candidate', (candidate) => {
+      peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
     });
 
     inputRef.current.focus();
@@ -29,8 +138,6 @@ const Room = ({ room, currentUser, activeUser }) => {
   }, [room]);
 
   useEffect(() => {
-    console.log(messagesRef.current.scrollHeight);
-    console.log(messagesRef.current.clientHeight);
     messagesRef.current.scrollTop =
       messagesRef.current.scrollHeight - messagesRef.current.clientHeight;
   }, [messages]);
@@ -47,7 +154,6 @@ const Room = ({ room, currentUser, activeUser }) => {
       },
     });
 
-    // setMessages([...messages, value]);
     setValue('');
     inputRef.current.focus();
   };
@@ -59,7 +165,7 @@ const Room = ({ room, currentUser, activeUser }) => {
           <div className='logo'></div>
           <div className='name'>{activeUser.name}</div>
         </div>
-        <p className='call'>call icon</p>
+        <CameraIcon onClick={handleVideoCall} />
       </div>
       <div className='messages' ref={messagesRef}>
         {messages.map((message, i) => {
@@ -68,6 +174,10 @@ const Room = ({ room, currentUser, activeUser }) => {
           );
         })}
       </div>
+
+      <video className='local-video' ref={videoRef} autoPlay></video>
+      <video className='remote-video' ref={remoteVideoRef} autoPlay></video>
+
       <div className='inputBar'>
         <form onSubmit={handleSubmit}>
           <input

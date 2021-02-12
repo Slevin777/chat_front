@@ -2,9 +2,8 @@ import './Chat.css';
 import SideMenu from './SideMenu';
 import { useEffect, useState } from 'react';
 import Room from './Room';
-// import httpService from '../../services/httpService';
 import socket from '../../services/webSockets';
-// import { useHistory } from 'react-router-dom';
+// import video from '../../services/videoSockets';
 
 const Chat = ({ currentUser }) => {
   // const history = useHistory();
