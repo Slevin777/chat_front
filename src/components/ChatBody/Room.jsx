@@ -175,12 +175,9 @@ const Room = ({ room, currentUser, activeUser }) => {
         })}
       </div>
 
-      {!!videoRef.current.srcObject && (
-        <video className='local-video' ref={videoRef} autoPlay></video>
-      )}
-      {!!remoteVideoRef.current.srcObject && (
-        <video className='remote-video' ref={remoteVideoRef} autoPlay></video>
-      )}
+      <video className='local-video' ref={videoRef} autoPlay></video>
+
+      <video className='remote-video' ref={remoteVideoRef} autoPlay></video>
 
       <div className='inputBar'>
         <form onSubmit={handleSubmit}>
