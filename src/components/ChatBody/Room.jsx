@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { ReactComponent as CameraIcon } from '../../icons/video-camera.svg';
 import socket from '../../services/webSockets';
 import Message from './Message';
+import callSound from '../../sounds/call.mp3';
+
 import './Room.scss';
 
 const { RTCPeerConnection, RTCSessionDescription } = window;
@@ -31,6 +33,10 @@ const getMedia = async (mediaConstraints) => {
 const Room = ({ room, currentUser, activeUser }) => {
   const [value, setValue] = useState('');
   const [messages, setMessages] = useState([]);
+  const [caller, setCaller] = useState(null);
+  const [calling, setCalling] = useState(null);
+
+  // const [play] = useSound(callSound);
 
   const videoRef = useRef();
   const remoteVideoRef = useRef();
@@ -42,8 +48,6 @@ const Room = ({ room, currentUser, activeUser }) => {
     setValue(e.target.value);
   };
 
-  /*   useEffect(() => {
-  }, [peerConnectionAnsw]); */
   peerConnectionAnsw.ontrack = (e) => {
     remoteVideoRef.current.srcObject = e.streams[0];
   };
@@ -58,7 +62,7 @@ const Room = ({ room, currentUser, activeUser }) => {
         audio: true,
         video: true,
       });
-      videoRef.current.srcObject = stream;
+
       stream
         .getTracks()
         .forEach((track) => peerConnection.addTrack(track, stream));
@@ -70,10 +74,44 @@ const Room = ({ room, currentUser, activeUser }) => {
         offer: peerConnection.localDescription,
         to: room.id,
       });
-      console.log('make a call');
+      videoRef.current.srcObject = stream;
     } catch (error) {
       console.log(error.message);
     }
+  };
+
+  const handleAnswer = async () => {
+    await peerConnectionAnsw.setRemoteDescription(
+      new RTCSessionDescription(caller.offer)
+    );
+
+    const stream = await getMedia({
+      audio: true,
+      video: true,
+    });
+
+    videoRef.current.srcObject = stream;
+    stream
+      .getTracks()
+      .forEach((track) => peerConnectionAnsw.addTrack(track, stream));
+
+    peerConnectionAnsw.onicecandidate = (event) => {
+      if (event.candidate) {
+        socket.emit('ice-candidate', {
+          to: room.id,
+          candidate: event.candidate,
+        });
+      }
+    };
+
+    const answer = await peerConnectionAnsw.createAnswer();
+    await peerConnectionAnsw.setLocalDescription(answer);
+
+    socket.emit('make-answer', {
+      answer: peerConnectionAnsw.localDescription,
+      to: room.id,
+    });
+    setCalling(false);
   };
 
   useEffect(() => {
@@ -84,7 +122,9 @@ const Room = ({ room, currentUser, activeUser }) => {
     });
 
     socket.on('call-made', async (data) => {
-      await peerConnectionAnsw.setRemoteDescription(
+      setCalling(true);
+      setCaller(data);
+      /* await peerConnectionAnsw.setRemoteDescription(
         new RTCSessionDescription(data.offer)
       );
 
@@ -104,7 +144,6 @@ const Room = ({ room, currentUser, activeUser }) => {
             to: room.id,
             candidate: event.candidate,
           });
-          // console.log('candidate', event.candidate);
         }
       };
 
@@ -114,9 +153,7 @@ const Room = ({ room, currentUser, activeUser }) => {
       socket.emit('make-answer', {
         answer: peerConnectionAnsw.localDescription,
         to: room.id,
-      });
-      console.log('call made');
-      console.log('make answer');
+      }); */
     });
 
     socket.on('answer-made', async (data) => {
@@ -177,6 +214,16 @@ const Room = ({ room, currentUser, activeUser }) => {
 
       <video className='local-video' ref={videoRef} muted autoPlay></video>
       <video className='remote-video' ref={remoteVideoRef} autoPlay></video>
+      {}
+
+      {calling && (
+        <>
+          <button className='answer' onClick={handleAnswer}>
+            answer
+          </button>
+          <audio autoPlay loop src={callSound}></audio>
+        </>
+      )}
 
       <div className='inputBar'>
         <form onSubmit={handleSubmit}>
