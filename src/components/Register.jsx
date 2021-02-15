@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import httpService from '../services/httpService';
 
-import './styles.scss';
+import './auth.scss';
 
 const Register = ({ history }) => {
   const [user, setUser] = useState({

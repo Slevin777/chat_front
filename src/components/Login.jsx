@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import httpService from '../services/httpService';
 
-import './login.scss';
+import './auth.scss';
 
 const Login = ({ history }) => {
   const [user, setUser] = useState({
