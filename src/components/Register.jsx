@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import httpService from '../services/httpService';
 
+import './styles.scss';
+
 const Register = ({ history }) => {
   const [user, setUser] = useState({
     name: '',
@@ -24,7 +26,7 @@ const Register = ({ history }) => {
     window.location.replace('/chat');
   };
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className='auth'>
       <input
         type='text'
         placeholder='name'
