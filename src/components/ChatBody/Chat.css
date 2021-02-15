@@ -12,6 +12,12 @@
   border-right: 1px solid #cddfe7;
 }
 
+@media (max-width: 500px) {
+  .active-users-panel {
+    width: 100px;
+  }
+}
+
 .panel-title {
   margin: 10px 0 0 0;
   padding-left: 30px;
@@ -70,4 +76,17 @@
   border-radius: 5px;
   height: 200px;
   width: 300px;
+}
+
+@media (max-width: 500px) {
+  .local-video {
+    height: 150px;
+    width: 210px;
+    right: 0px;
+  }
+
+  .remote-video {
+    width: 150px;
+    height: 130px;
+  }
 }

@@ -44,10 +44,6 @@ const Chat = ({ currentUser }) => {
         ) : (
           <Room room={room} currentUser={currentUser} activeUser={activeUser} />
         )}
-        <div className='video-container'>
-          {/* <video autoplay class='remote-video' id='remote-video'></video> */}
-          {/* <video autoplay muted class='local-video' id='local-video'></video> */}
-        </div>
       </div>
     </div>
   );
