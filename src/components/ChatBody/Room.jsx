@@ -175,10 +175,10 @@ const Room = ({ room, currentUser, activeUser }) => {
         })}
       </div>
 
-      {!!videoRef.current && (
+      {!!videoRef.current.srcObject && (
         <video className='local-video' ref={videoRef} autoPlay></video>
       )}
-      {!!remoteVideoRef.current && (
+      {!!remoteVideoRef.current.srcObject && (
         <video className='remote-video' ref={remoteVideoRef} autoPlay></video>
       )}
 
