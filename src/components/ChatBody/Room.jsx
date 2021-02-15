@@ -176,7 +176,6 @@ const Room = ({ room, currentUser, activeUser }) => {
       </div>
 
       <video className='local-video' ref={videoRef} autoPlay></video>
-
       <video className='remote-video' ref={remoteVideoRef} autoPlay></video>
 
       <div className='inputBar'>
