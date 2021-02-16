@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { ReactComponent as CameraIcon } from '../../icons/video-camera.svg';
+import RingIcon from '../../icons/RIngIcon';
 import socket from '../../services/webSockets';
 import Message from './Message';
 import callSound from '../../sounds/call.mp3';
@@ -214,7 +215,6 @@ const Room = ({ room, currentUser, activeUser }) => {
 
       <video className='local-video' ref={videoRef} muted autoPlay></video>
       <video className='remote-video' ref={remoteVideoRef} autoPlay></video>
-      {}
 
       {calling && (
         <>
@@ -224,6 +224,8 @@ const Room = ({ room, currentUser, activeUser }) => {
           <audio autoPlay loop src={callSound}></audio>
         </>
       )}
+
+      {/* <RingIcon /> */}
 
       <div className='inputBar'>
         <form onSubmit={handleSubmit}>
